@@ -1,6 +1,6 @@
 name: CI/CD Pipeline
 
-on:
+on:                    
   push:
     branches:
       - main
@@ -27,9 +27,12 @@ jobs:
           docker build -t roua21/web-api-prod:latest ./app
           docker push roua21/web-api-prod:latest
 
-      - name: Deploy to Kubernetes
+      - name: Setup kubeconfig
+        run: bash ./setup-kubeconfig.sh
         env:
           KUBECONFIG: ${{ secrets.KUBECONFIG }}
+
+      - name: Deploy to Kubernetes
         run: |
           kubectl apply -f k8s-resources/web-api-namespace.yaml
           kubectl apply -f k8s-resources/metallb-config.yaml
